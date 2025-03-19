@@ -87,57 +87,57 @@ plt.legend()
 plt.savefig(f"{save_dir}/loss.png", dpi=200)
 plt.close()
 
-# network.eval()
-# out = network(test_inp)
-# inp = test_inp
-# tar = test_tar
+network.eval()
+out = network(test_inp)
+inp = test_inp
+tar = test_tar
 
-# inp = inp.cpu().detach().numpy()
-# tar = tar.cpu().detach().numpy()
-# out = out.cpu().detach().numpy()
+inp = inp.cpu().detach().numpy()
+tar = tar.cpu().detach().numpy()
+out = out.cpu().detach().numpy()
 
-# inp = custom_data.denormalize(inp)
-# tar = custom_data.denormalize(tar)
-# out = custom_data.denormalize(out)
-# dif = out - tar
-# rel_dif = (out - tar) / tar
+inp = custom_data.denormalize(inp)
+tar = custom_data.denormalize(tar)
+out = custom_data.denormalize(out)
+dif = out - tar
+rel_dif = (out - tar) / tar
 
-# print(inp.shape, tar.shape, out.shape)
+print(inp.shape, tar.shape, out.shape)
 
 
-# for idx in range(inp.shape[0]) :
+for idx in range(100) :
 
-#     plt.figure(figsize=(15, 10))
-#     plt.suptitle(f"Comparison, Index {idx}")
+    plt.figure(figsize=(15, 10))
+    plt.suptitle(f"Comparison, Index {idx}")
 
-#     plt.subplot(2, 3, 1)
-#     plt.plot(inp[idx], color="red")
-#     plt.title("Input, I")
+    plt.subplot(2, 3, 1)
+    plt.plot(inp[idx], color="red")
+    plt.title("Input, I")
 
-#     plt.subplot(2, 3, 2)
-#     plt.plot(tar[idx], color="blue")
-#     plt.title("Target, T")
+    plt.subplot(2, 3, 2)
+    plt.plot(tar[idx], color="blue")
+    plt.title("Target, T")
 
-#     plt.subplot(2, 3, 3)
-#     plt.plot(out[idx], color="green")
-#     plt.title("Model Output, O")
+    plt.subplot(2, 3, 3)
+    plt.plot(out[idx], color="green")
+    plt.title("Model Output, O")
 
-#     plt.subplot(2, 3, 4)
-#     plt.plot(tar[idx], color="blue", label="Target")
-#     plt.plot(out[idx], color="green", label="Model Output")
-#     plt.title("T & O")
-#     plt.legend()
+    plt.subplot(2, 3, 4)
+    plt.plot(tar[idx], color="blue", label="Target")
+    plt.plot(out[idx], color="green", label="Model Output")
+    plt.title("T & O")
+    plt.legend()
 
-#     plt.subplot(2, 3, 5)
-#     plt.plot(dif[idx], color="orange")
-#     plt.title(f"Error, O - T")
+    plt.subplot(2, 3, 5)
+    plt.plot(dif[idx], color="orange")
+    plt.title(f"Error, O - T")
 
-#     plt.subplot(2, 3, 6)
-#     plt.plot(rel_dif[idx], color="purple")
-#     plt.title(f"Relative Error, (O - T) / T")
+    plt.subplot(2, 3, 6)
+    plt.plot(rel_dif[idx], color="purple")
+    plt.title(f"Relative Error, (O - T) / T")
 
-#     plt.savefig(f"{save_dir}/comparison_{idx}.png", dpi=200)
-#     plt.close()
+    plt.savefig(f"{save_dir}/comparison_{idx}.png", dpi=200)
+    plt.close()
 
 
 
