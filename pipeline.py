@@ -1,66 +1,55 @@
+import os
+from glob import glob
+import h5py
 import numpy as np
-from scipy.io import readsav
 import torch
+
 
 class CustomData:
     def __init__(self, options):
-        data_type = options.data_type
         data_dir = options.data_dir
-        possible_data_type = ["plage", "fil_b", "fil_r", "flare", "cr_r"]
+        self.list_data = glob(os.path.join(data_dir, "*.h5"))
+        num_inp = options.num_inp
+        seed = options.seed
 
-        if data_type in possible_data_type:
-            self.inp_file_path = f"{data_dir}/convol_data_{data_type}.sav"
-            self.tar_file_path = f"{data_dir}/data_{data_type}.sav"
-            inp = readsav(self.inp_file_path)["data"][:,:,1]
-            tar = readsav(self.tar_file_path)["data"][:,:,1]
-            total = np.concatenate([inp, tar], axis=1)
-            self.median = np.median(total)
-            self.std = np.std(total)
+        inps = []
+        tars = []
 
-            perc = int(0.8 * inp.shape[0])
-            train_inp = inp[:perc]
-            train_tar = tar[:perc]
-            test_inp = inp[perc:]
-            test_tar = tar[perc:]
+        for data_path in self.list_data:
+            with h5py.File(data_path, "r") as f:
+                inp = f[f"data_{num_inp}"][:]
+                tar = f[f"data_original"][:]
+                inps.append(inp)
+                tars.append(tar)
 
-        elif data_type == "all" :
-            train_inp = []
-            train_tar = []
-            test_inp = []
-            test_tar = []
-            total = []
-            for dt in possible_data_type:
-                inp = readsav(f"{data_dir}/convol_data_{dt}.sav")["data"][:,:,1]
-                tar = readsav(f"{data_dir}/data_{dt}.sav")["data"][:,:,1]
-                total.append(np.concatenate([inp, tar], axis=1))
+        inps = np.concatenate(inps, axis=0)
+        tars = np.concatenate(tars, axis=0)
+        self.median = np.median(np.concatenate([inps, tars], axis=1))
+        self.std = np.std(np.concatenate([inps, tars], axis=1))
 
-                perc = int(0.8 * inp.shape[0])                
-                train_inp_dt = inp[:perc]
-                train_tar_dt = tar[:perc]
-                test_inp_dt = inp[perc:]
-                test_tar_dt = tar[perc:]
+        inps = self.normalize(inps)
+        tars = self.normalize(tars)
 
-                train_inp.append(train_inp_dt)
-                train_tar.append(train_tar_dt)
-                test_inp.append(test_inp_dt)
-                test_tar.append(test_tar_dt)
+        # using sklearn
+        # from sklearn.model_selection import train_test_split
+        # train_inp, test_inp, train_tar, test_tar = train_test_split(inps, tars, test_size=0.1, random_state=seed)
 
-            total = np.concatenate(total, axis=1)
-            self.median = np.median(total)
-            self.std = np.std(total)
+        # using numpy
+        indices = np.arange(inps.shape[0])
+        np.random.shuffle(indices)
+        perc = int(0.9 * inps.shape[0])
+        train_indices = indices[:perc]
+        test_indices = indices[perc:]
 
-            train_inp = np.concatenate(train_inp, axis=0)
-            train_tar = np.concatenate(train_tar, axis=0)
-            test_inp = np.concatenate(test_inp, axis=0)
-            test_tar = np.concatenate(test_tar, axis=0)
+        train_inp = inps[train_indices]
+        train_tar = tars[train_indices]
+        test_inp = inps[test_indices]
+        test_tar = tars[test_indices]
 
-        else :
-            raise ValueError(f"Data type {data_type} not supported")
-
-        self.train_inp = torch.tensor(self.normalize(train_inp), dtype=torch.float32)
-        self.train_tar = torch.tensor(self.normalize(train_tar), dtype=torch.float32)
-        self.test_inp = torch.tensor(self.normalize(test_inp), dtype=torch.float32)
-        self.test_tar = torch.tensor(self.normalize(test_tar), dtype=torch.float32)
+        self.train_inp = torch.tensor(train_inp, dtype=torch.float32)
+        self.train_tar = torch.tensor(train_tar, dtype=torch.float32)
+        self.test_inp = torch.tensor(test_inp, dtype=torch.float32)
+        self.test_tar = torch.tensor(test_tar, dtype=torch.float32)
 
     def normalize(self, data):
         return (data - self.median) / self.std
@@ -70,3 +59,16 @@ class CustomData:
 
     def get_data(self):
         return self.train_inp, self.train_tar, self.test_inp, self.test_tar
+
+
+
+if __name__ == "__main__" :
+
+    from options import Options
+    options = Options().parse()
+
+    options.data_dir = os.path.join("D:\\Data", "halpha", "dataset")
+
+    data = CustomData(options)
+    train_inp, train_tar, test_inp, test_tar = data.get_data()
+    print(train_inp.shape, train_tar.shape, test_inp.shape, test_tar.shape)
