@@ -67,7 +67,7 @@ while epochs <= options.nb_epochs + options.nb_epochs_decay :
         print(f"Epochs {epochs}, Loss {loss.item()}")
         network.train()
 
-save_dir = f"{options.output_dir}/{options.experiment}/{options.data_type}"
+save_dir = f"{options.output_dir}/{options.experiment}/out_{options.num_inp}"
 os.makedirs(save_dir, exist_ok=True)
 torch.save(network.state_dict(), f"{save_dir}/model.pth")
 
