@@ -1,4 +1,5 @@
 import os
+import h5py
 import matplotlib.pyplot as plt
 from options import Options
 options = Options().parse()
@@ -31,6 +32,14 @@ train_inp = train_inp.to(device)
 train_tar = train_tar.to(device)
 test_inp = test_inp.to(device)
 test_tar = test_tar.to(device)
+
+data_path = f"{options.output_dir}/{options.experiment}/data_{options.num_inp}.h5"
+os.makedirs(os.path.dirname(data_path), exist_ok=True)
+with h5py.File(data_path, "w") as f:
+    f.create_dataset("train_inp", data=train_inp.cpu().detach().numpy())
+    f.create_dataset("train_tar", data=train_tar.cpu().detach().numpy())
+    f.create_dataset("test_inp", data=test_inp.cpu().detach().numpy())
+    f.create_dataset("test_tar", data=test_tar.cpu().detach().numpy())
 
 network = CustomNetwork(options)
 print(network)
