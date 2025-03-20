@@ -145,6 +145,8 @@ if not os.path.exists(plot_dir):
 
 if options.data_mode == "random" :
 
+    # indices = random.sample(range(options.num_tar), 100)
+    # for idx in range(100) :
     for idx in range(100) :
 
         arr_i = np.random.randint(0, inp.shape[0])
@@ -181,7 +183,11 @@ if options.data_mode == "random" :
         plt.close()
 
 elif options.data_mode == "index" :
+
+    # indices = random.sample(range(options.num_tar), 100)
+    # for idx in indices :
     for idx in range(100) :
+
         arr_i = np.random.randint(0, custom_data.size_i)
         arr_j = np.random.randint(0, custom_data.size_j)
 
@@ -217,25 +223,25 @@ elif options.data_mode == "index" :
         plt.savefig(f"{plot_dir}/profile_{idx:03d}.png", dpi=200)
         plt.close()
 
-    for idx in range(20) :
-        num = np.random.randint(0, options.num_tar)
+    indices = sorted(random.sample(range(options.num_tar), 20))
+    for idx in indices :
         plt.figure(figsize=(10, 10))
-        plt.suptitle(f"Image, ({num})")
+        plt.suptitle(f"Image, ({idx})")
 
         plt.subplot(2, 2, 1)
-        plt.imshow(test_tar[:, num], cmap="hot")
+        plt.imshow(test_tar[:, :, idx], cmap="hot")
         plt.title("Target, T")
 
         plt.subplot(2, 2, 2)
-        plt.imshow(test_out[:, num], cmap="hot")
+        plt.imshow(test_out[:, :, idx], cmap="hot")
         plt.title("Model Output, O")
 
         plt.subplot(2, 2, 3)
-        plt.imshow(test_error[:, num], cmap="hot")
+        plt.imshow(test_error[:, :, idx], cmap="hot")
         plt.title("Error, O - T")
 
         plt.subplot(2, 2, 4)
-        plt.imshow(test_rel_error[:, num], cmap="hot")
+        plt.imshow(test_rel_error[:, :, idx], cmap="hot")
         plt.title("Relative Error, (O - T) / T")
 
         plt.savefig(f"{plot_dir}/image_{idx:03d}.png", dpi=200)
