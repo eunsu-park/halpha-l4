@@ -48,26 +48,21 @@ for file_path in data_list:
 
     wave_original = data_20["wl1"]
     img_original = data_20["img1"]
-    img_original = flatten_data(img_original)
 
     wave_20 = data_20["wl2"]
     img_20 = data_20["img2"]
-    img_20 = flatten_data(img_20)
     num_20 = len(wave_20)
 
     wave_25 = data_25["wl2"]
     img_25 = data_25["img2"]
-    img_25 = flatten_data(img_25)
     num_25 = len(wave_25)
 
     wave_35 = data_35["wl2"]
     img_35 = data_35["img2"]
-    img_35 = flatten_data(img_35)
     num_35 = len(wave_35)
 
     wave_45 = data_45["wl2"]
     img_45 = data_45["img2"]
-    img_45 = flatten_data(img_45)
     num_45 = len(wave_45)
 
     print(f"# of wavelength: {len(wave_original)}, {len(wave_20)}, {len(wave_25)}, {len(wave_35)}, {len(wave_45)}")
