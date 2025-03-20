@@ -21,10 +21,9 @@ def flatten_data(data):
 
 CONV = [20, 25, 35, 45]
 
-# data_root = "/NAS/data/halpha"
-data_root = os.path.join("D:\\Data", "halpha", "conv")
-
-save_root = os.path.join("D:\\Data", "halpha", "dataset")
+HOME = os.environ["HOME"]
+data_root = os.path.join(HOME, "Data", "halpha", "conv")
+save_root = os.path.join(HOME, "Data", "halpha", "dataset")
 
 pattern = os.path.join(data_root, "0_20", "*.sav")
 data_list = glob(pattern)

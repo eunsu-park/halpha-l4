@@ -45,15 +45,20 @@ network = CustomNetwork(options)
 print(network)
 network = network.to(device)
 
-criterion = torch.nn.MSELoss().to(device)
-optimizer = torch.optim.Adam(network.parameters(), lr=1e-4)
 
+def log_cosh_loss(y_pred, y):
+    return torch.mean(torch.log(torch.cosh(y_pred - y)))
+criterion = log_cosh_loss
+metric_function = torch.nn.MSELoss()
+optimizer = torch.optim.Adam(network.parameters(), lr=2e-4)
 def lambda_rule(epoch):
     return 1.0 - max(0, epoch + 1 - options.nb_epochs) / float(options.nb_epochs_decay + 1)    
 scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer=optimizer, lr_lambda=lambda_rule)
 
 train_losses = []
 test_losses = []
+train_metrics = []
+test_metrics = []
 
 epochs = 0
 while epochs <= options.nb_epochs + options.nb_epochs_decay :
@@ -61,9 +66,11 @@ while epochs <= options.nb_epochs + options.nb_epochs_decay :
     optimizer.zero_grad()
     out = network(train_inp)
     loss = criterion(out, train_tar)
+    metric = metric_function(out, train_tar)
     loss.backward()
     optimizer.step()
     train_losses.append(loss.item())
+    train_metrics.append(metric.item())
 
     epochs += 1
     scheduler.step()
@@ -72,8 +79,10 @@ while epochs <= options.nb_epochs + options.nb_epochs_decay :
         network.eval()
         out = network(test_inp)
         loss = criterion(out, test_tar)
+        metric = metric_function(out, test_tar)
         test_losses.append(loss.item())
-        print(f"Epochs {epochs}, Loss {loss.item()}")
+        test_metrics.append(metric.item())
+        print(f"Epochs {epochs}, Loss (Log-Cosh) {loss.item():.2f}, Metric (MSE) {metric.item():.2f}")
         network.train()
 
 save_dir = f"{options.output_dir}/{options.experiment}/out_{options.num_inp}"
@@ -81,8 +90,9 @@ os.makedirs(save_dir, exist_ok=True)
 torch.save(network.state_dict(), f"{save_dir}/model.pth")
 
 plt.figure(figsize=(15, 10))
-plt.plot(train_losses, color="red", label="Train Loss")
-plt.plot(np.arange(0, len(test_losses) * 100, 100), test_losses, color="blue", label="Test Loss")
+plt.plot(train_losses, color="red", label="Train Loss (Log-Cosh)")
+plt.plot(np.arange(0, len(test_losses) * 100, 100), test_losses, color="blue", label="Test Loss (Log-Cosh)")
+plt.plot(np.arange(0, len(test_losses) * 100, 100), train_metrics, color="green", label="Train Metric (MSE)")
 plt.legend()
 plt.savefig(f"{save_dir}/loss.png", dpi=200)
 plt.close()
@@ -103,6 +113,8 @@ dif = out - tar
 rel_dif = (out - tar) / tar
 
 print(inp.shape, tar.shape, out.shape)
+
+# with h5py.File(f"{save_dir}/test.h5", "w") as f:
 
 
 for idx in range(100) :
