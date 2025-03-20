@@ -1,4 +1,5 @@
 import os
+import time
 import h5py
 import matplotlib.pyplot as plt
 from options import Options
@@ -58,6 +59,7 @@ train_metrics = []
 test_metrics = []
 
 epochs = 0
+t0 = time.time()
 while epochs <= options.num_epochs :
     network.train()
     optimizer.zero_grad()
@@ -73,14 +75,20 @@ while epochs <= options.num_epochs :
     scheduler.step()
 
     if epochs % 100 == 0:
+        elapsed = time.time() - t0
         network.eval()
         test_out = network(test_inp)
         loss = criterion(test_out, test_tar)
         metric = metric_function(test_out, test_tar)
         test_losses.append(loss.item())
         test_metrics.append(metric.item())
-        print(f"Epochs {epochs}, Loss (Log-Cosh) {loss.item():.2f}, Metric (MSE) {metric.item():.2f}")
-        network.train()
+        message = ""
+        message += f"Epochs {epochs}, "
+        message += f"Loss (Log-Cosh) {loss.item():.2f}, "
+        message += f"Metric (MSE) {metric.item():.2f}, "
+        message += f"Elapsed (Sec) {elapsed:.2f}"
+        print(message)
+        t0 = time.time()
 
 
 torch.save(network.state_dict(), f"{experiment_dir}/model.pth")
