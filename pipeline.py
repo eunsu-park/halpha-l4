@@ -73,6 +73,9 @@ class CustomData:
                     inp = f[f"data_{num_inp}"][:]
                     tar = f[f"data_original"][:]
 
+                    inp = flatten_data(inp)
+                    tar = flatten_data(tar)
+
                     inps.append(inp)
                     tars.append(tar)
 
