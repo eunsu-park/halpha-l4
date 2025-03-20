@@ -143,67 +143,107 @@ plot_dir = f"{experiment_dir}/plot"
 if not os.path.exists(plot_dir):
     os.makedirs(plot_dir)
 
-for idx in range(100) :
+if options.data_mode == "random" :
 
-    if options.data_mode == "index" :
-        arr_i = np.random.randint(0, custom_data.size_i)
-        arr_j = np.random.randint(0, custom_data.size_j)
-    elif options.data_mode == "random" :
+    for idx in range(100) :
+
         arr_i = np.random.randint(0, inp.shape[0])
+        plt.figure(figsize=(15, 10))
+        plt.suptitle(f"Profile, ({arr_i})")
 
-    plt.figure(figsize=(15, 10))
-    if options.data_mode == "index" :
-        plt.suptitle(f"Comparison, Index ({arr_i}, {arr_j})")
-    elif options.data_mode == "random" :
-        plt.suptitle(f"Comparison, Random ({arr_i})")
-
-    plt.subplot(2, 3, 1)
-    if options.data_mode == "index" :
-        plt.plot(wave_inp, test_inp[arr_i, arr_j], color="red")
-    elif options.data_mode == "random" :
+        plt.subplot(2, 3, 1)
         plt.plot(wave_inp, test_inp[arr_i], color="red")
-    plt.title("Input, I")
+        plt.title("Input, I")
 
-    plt.subplot(2, 3, 2)
-    if options.data_mode == "index" :
-        plt.plot(wave_tar, test_tar[arr_i, arr_j], color="blue")
-    elif options.data_mode == "random" :
+        plt.subplot(2, 3, 2)
         plt.plot(wave_tar, test_tar[arr_i], color="blue")
-    plt.title("Target, T")
+        plt.title("Target, T")
 
-    plt.subplot(2, 3, 3)
-    if options.data_mode == "index" :
-        plt.plot(wave_tar, test_out[arr_i, arr_j], color="green")
-    elif options.data_mode == "random" :
+        plt.subplot(2, 3, 3)
         plt.plot(wave_tar, test_out[arr_i], color="green")
-    plt.title("Model Output, O")
+        plt.title("Model Output, O")
 
-    plt.subplot(2, 3, 4)
-    if options.data_mode == "index" :
-        plt.plot(wave_tar, test_tar[arr_i, arr_j], color="blue", label="Target")
-        plt.plot(wave_tar, test_out[arr_i, arr_j], color="green", label="Model Output")
-    elif options.data_mode == "random" :
+        plt.subplot(2, 3, 4)
         plt.plot(wave_tar, test_tar[arr_i], color="blue", label="Target")
         plt.plot(wave_tar, test_out[arr_i], color="green", label="Model Output")
-    plt.title("T & O")
-    plt.legend()
+        plt.title("T & O")
+        plt.legend()
 
-    plt.subplot(2, 3, 5)
-    if options.data_mode == "index" :
-        plt.plot(wave_tar, test_error[arr_i, arr_j], color="red")
-    elif options.data_mode == "random" :
+        plt.subplot(2, 3, 5)
         plt.plot(wave_tar, test_error[arr_i], color="red")
-    plt.title(f"Error, O - T")
+        plt.title(f"Error, O - T")
 
-    plt.subplot(2, 3, 6)
-    if options.data_mode == "index" :
-        plt.plot(wave_tar, test_rel_error[arr_i, arr_j], color="blue")
-    elif options.data_mode == "random" :
+        plt.subplot(2, 3, 6)
         plt.plot(wave_tar, test_rel_error[arr_i], color="blue")
-    plt.title(f"Relative Error, (O - T) / T")
+        plt.title(f"Relative Error, (O - T) / T")
 
-    plt.savefig(f"{plot_dir}/comparison_{idx}.png", dpi=200)
-    plt.close()
+        plt.savefig(f"{plot_dir}/{idx:03d}_profile.png", dpi=200)
+        plt.close()
+
+elif options.data_mode == "index" :
+    for idx in range(100) :
+        arr_i = np.random.randint(0, custom_data.size_i)
+        arr_j = np.random.randint(0, custom_data.size_j)
+
+        plt.figure(figsize=(15, 10))
+        plt.suptitle(f"Profile, ({arr_i}, {arr_j})")
+
+        plt.subplot(2, 3, 1)
+        plt.plot(wave_inp, test_inp[arr_i, arr_j], color="red")
+        plt.title("Input, I")
+
+        plt.subplot(2, 3, 2)
+        plt.plot(wave_tar, test_tar[arr_i, arr_j], color="blue")
+        plt.title("Target, T")
+
+        plt.subplot(2, 3, 3)
+        plt.plot(wave_tar, test_out[arr_i, arr_j], color="green")
+        plt.title("Model Output, O")
+
+        plt.subplot(2, 3, 4)
+        plt.plot(wave_tar, test_tar[arr_i, arr_j], color="blue", label="Target")
+        plt.plot(wave_tar, test_out[arr_i, arr_j], color="green", label="Model Output")
+        plt.title("T & O")
+        plt.legend()
+
+        plt.subplot(2, 3, 5)
+        plt.plot(wave_tar, test_error[arr_i, arr_j], color="red")
+        plt.title(f"Error, O - T")
+
+        plt.subplot(2, 3, 6)
+        plt.plot(wave_tar, test_rel_error[arr_i, arr_j], color="blue")
+        plt.title(f"Relative Error, (O - T) / T")
+
+        plt.savefig(f"{plot_dir}/{idx:03d}_profile.png", dpi=200)
+        plt.close()
+
+    for idx in range(20) :
+        num = np.random.randint(0, options.num_tar)
+        plt.figure(figsize=(15, 10))
+        plt.suptitle(f"Image, ({num})")
+
+        plt.subplot(2, 3, 1)
+        plt.imshow(test_inp[:, num], cmap="hot")
+        plt.title("Input, I")
+
+        plt.subplot(2, 3, 2)
+        plt.imshow(test_tar[:, num], cmap="hot")
+        plt.title("Target, T")
+
+        plt.subplot(2, 3, 3)
+        plt.imshow(test_out[:, num], cmap="hot")
+        plt.title("Model Output, O")
+
+        plt.subplot(2, 3, 4)
+        plt.imshow(test_error[:, num], cmap="hot", label="Target")
+        plt.title("Error, O - T")
+
+        plt.subplot(2, 3, 5)
+        plt.imshow(test_rel_error[:, num], cmap="hot")
+        plt.title("Relative Error, (O - T) / T")
+
+        plt.savefig(f"{plot_dir}/{idx:03d}_image.png", dpi=200)
+        plt.close()
 
 
 save_path = f"{experiment_dir}/result.h5"
