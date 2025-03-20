@@ -219,26 +219,22 @@ elif options.data_mode == "index" :
 
     for idx in range(20) :
         num = np.random.randint(0, options.num_tar)
-        plt.figure(figsize=(15, 10))
+        plt.figure(figsize=(10, 10))
         plt.suptitle(f"Image, ({num})")
 
-        plt.subplot(2, 3, 1)
-        plt.imshow(test_inp[:, num], cmap="hot")
-        plt.title("Input, I")
-
-        plt.subplot(2, 3, 2)
+        plt.subplot(2, 2, 1)
         plt.imshow(test_tar[:, num], cmap="hot")
         plt.title("Target, T")
 
-        plt.subplot(2, 3, 3)
+        plt.subplot(2, 2, 2)
         plt.imshow(test_out[:, num], cmap="hot")
         plt.title("Model Output, O")
 
-        plt.subplot(2, 3, 4)
+        plt.subplot(2, 2, 3)
         plt.imshow(test_error[:, num], cmap="hot", label="Target")
         plt.title("Error, O - T")
 
-        plt.subplot(2, 3, 5)
+        plt.subplot(2, 2, 4)
         plt.imshow(test_rel_error[:, num], cmap="hot")
         plt.title("Relative Error, (O - T) / T")
 
