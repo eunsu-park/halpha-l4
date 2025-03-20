@@ -1,16 +1,16 @@
-python train.py \
-    --data_dir /NAS/data/halpha/dataset \
-    --output_dir /NAS/result/halpha \
-    --data_mode random \
-    --num_inp 19 \
-    --experiment_name random_19 \
-
 # python train.py \
 #     --data_dir /NAS/data/halpha/dataset \
 #     --output_dir /NAS/result/halpha \
 #     --data_mode random \
-#     --num_inp 27 \
-#     --experiment_name random_27 \
+#     --num_inp 19 \
+#     --experiment_name random_19 \
+
+python train.py \
+    --data_dir /NAS/data/halpha/dataset \
+    --output_dir /NAS/result/halpha \
+    --data_mode random \
+    --num_inp 27 \
+    --experiment_name random_27 \
 
 # python train.py \
 #     --data_dir /NAS/data/halpha/dataset \
@@ -27,21 +27,23 @@ python train.py \
 #     --experiment_name random_41 \
 
 
-python train.py \
-    --data_dir /NAS/data/halpha/dataset \
-    --output_dir /NAS/result/halpha \
-    --data_mode index \
-    --test_index 0 \
-    --num_inp 19 \
-    --experiment_name index_0_19 \
+####
 
 # python train.py \
 #     --data_dir /NAS/data/halpha/dataset \
 #     --output_dir /NAS/result/halpha \
 #     --data_mode index \
 #     --test_index 0 \
-#     --num_inp 27 \
-#     --experiment_name index_0_27 \
+#     --num_inp 19 \
+#     --experiment_name index_0_19 \
+
+python train.py \
+    --data_dir /NAS/data/halpha/dataset \
+    --output_dir /NAS/result/halpha \
+    --data_mode index \
+    --test_index 0 \
+    --num_inp 27 \
+    --experiment_name index_0_27 \
 
 # python train.py \
 #     --data_dir /NAS/data/halpha/dataset \

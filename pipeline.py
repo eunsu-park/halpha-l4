@@ -49,9 +49,13 @@ class CustomData:
             with h5py.File(test_file_path, "r") as f:
                 test_inp = f[f"data_{num_inp}"][:]
                 test_tar = f[f"data_original"][:]
+                wave_inp = f["wave_{num_inp}"][:]
+                wave_tar = f["wave_original"][:]
 
                 self.size_i = test_tar.shape[0]
                 self.size_j = test_tar.shape[1]
+                self.wave_inp = wave_inp
+                self.wave_tar = wave_tar
 
                 test_inp = flatten_data(test_inp)
                 test_tar = flatten_data(test_tar)

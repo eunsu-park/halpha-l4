@@ -37,13 +37,6 @@ experiment_dir = f"{options.output_dir}/{options.experiment_name}"
 if not os.path.exists(experiment_dir):
     os.makedirs(experiment_dir)
 
-data_path = f"{experiment_dir}/data_{options.num_inp}.h5"
-with h5py.File(data_path, "w") as f:
-    f.create_dataset("train_inp", data=train_inp.cpu().detach().numpy())
-    f.create_dataset("train_tar", data=train_tar.cpu().detach().numpy())
-    f.create_dataset("test_inp", data=test_inp.cpu().detach().numpy())
-    f.create_dataset("test_tar", data=test_tar.cpu().detach().numpy())
-
 network = CustomNetwork(options)
 print(network)
 network = network.to(device)
@@ -81,9 +74,9 @@ while epochs <= options.num_epochs :
 
     if epochs % 100 == 0:
         network.eval()
-        out = network(test_inp)
-        loss = criterion(out, test_tar)
-        metric = metric_function(out, test_tar)
+        test_out = network(test_inp)
+        loss = criterion(test_out, test_tar)
+        metric = metric_function(test_out, test_tar)
         test_losses.append(loss.item())
         test_metrics.append(metric.item())
         print(f"Epochs {epochs}, Loss (Log-Cosh) {loss.item():.2f}, Metric (MSE) {metric.item():.2f}")
@@ -108,21 +101,28 @@ plt.savefig(f"{experiment_dir}/loss_and_metric.png", dpi=200)
 plt.close()
 
 network.eval()
-out = network(test_inp)
+
 inp = test_inp
 tar = test_tar
+out = network(test_inp)
+wave_inp = custom_data.wave_inp
+wave_tar = custom_data.wave_tar
 
 inp = inp.cpu().detach().numpy()
 tar = tar.cpu().detach().numpy()
 out = out.cpu().detach().numpy()
-
 inp = custom_data.denormalize(inp)
 tar = custom_data.denormalize(tar)
 out = custom_data.denormalize(out)
-dif = out - tar
-rel_dif = (out - tar) / tar
 
-print(inp.shape, tar.shape, out.shape)
+if options.data_mode == "index" :
+    inp = reflatten_data(inp, custom_data.size_i, custom_data.size_j)
+    tar = reflatten_data(tar, custom_data.size_i, custom_data.size_j)
+    out = reflatten_data(out, custom_data.size_i, custom_data.size_j)
+error = out - tar
+rel_error = error / tar
+
+print(inp.shape, tar.shape, out.shape, error.shape, rel_error.shape)
 
 plot_dir = f"{experiment_dir}/plot"
 if not os.path.exists(plot_dir):
@@ -130,58 +130,77 @@ if not os.path.exists(plot_dir):
 
 for idx in range(100) :
 
+    if options.data_mode == "index" :
+        arr_i = np.random.randint(0, custom_data.size_i)
+        arr_j = np.random.randint(0, custom_data.size_j)
+    elif options.data_mode == "random" :
+        arr_i = np.random.randint(0, inp.shape[0])
+
     plt.figure(figsize=(15, 10))
-    plt.suptitle(f"Comparison, Index {idx}")
+    if options.data_mode == "index" :
+        plt.suptitle(f"Comparison, Index ({arr_i}, {arr_j})")
+    elif options.data_mode == "random" :
+        plt.suptitle(f"Comparison, Random ({arr_i})")
 
     plt.subplot(2, 3, 1)
-    plt.plot(inp[idx], color="red")
+    if options.data_mode == "index" :
+        plt.plot(wave_inp, inp[arr_i, arr_j], color="red")
+    elif options.data_mode == "random" :
+        plt.plot(wave_inp, inp[arr_i], color="red")
     plt.title("Input, I")
 
     plt.subplot(2, 3, 2)
-    plt.plot(tar[idx], color="blue")
+    if options.data_mode == "index" :
+        plt.plot(wave_tar, tar[arr_i, arr_j], color="blue")
+    elif options.data_mode == "random" :
+        plt.plot(wave_tar, tar[arr_i], color="blue")
     plt.title("Target, T")
 
     plt.subplot(2, 3, 3)
-    plt.plot(out[idx], color="green")
+    if options.data_mode == "index" :
+        plt.plot(wave_tar, out[arr_i, arr_j], color="green")
+    elif options.data_mode == "random" :
+        plt.plot(wave_tar, out[arr_i], color="green")
     plt.title("Model Output, O")
 
     plt.subplot(2, 3, 4)
-    plt.plot(tar[idx], color="blue", label="Target")
-    plt.plot(out[idx], color="green", label="Model Output")
+    if options.data_mode == "index" :
+        plt.plot(wave_tar, tar[arr_i, arr_j], color="blue", label="Target")
+        plt.plot(wave_tar, out[arr_i, arr_j], color="green", label="Model Output")
+    elif options.data_mode == "random" :
+        plt.plot(wave_tar, tar[arr_i], color="blue", label="Target")
+        plt.plot(wave_tar, out[arr_i], color="green", label="Model Output")
     plt.title("T & O")
     plt.legend()
 
     plt.subplot(2, 3, 5)
-    plt.plot(dif[idx], color="orange")
+    if options.data_mode == "index" :
+        plt.plot(wave_tar, error[arr_i, arr_j], color="red")
+    elif options.data_mode == "random" :
+        plt.plot(wave_tar, error[arr_i], color="red")
     plt.title(f"Error, O - T")
 
     plt.subplot(2, 3, 6)
-    plt.plot(rel_dif[idx], color="purple")
+    if options.data_mode == "index" :
+        plt.plot(wave_tar, rel_error[arr_i, arr_j], color="blue")
+    elif options.data_mode == "random" :
+        plt.plot(wave_tar, rel_error[arr_i], color="blue")
     plt.title(f"Relative Error, (O - T) / T")
 
     plt.savefig(f"{plot_dir}/comparison_{idx}.png", dpi=200)
     plt.close()
 
-if options.data_mode == "index" :
 
-    size_i = custom_data.size_i
-    size_j = custom_data.size_j
-
-    inp = reflatten_data(inp, size_i, size_j)
-    tar = reflatten_data(tar, size_i, size_j)
-    out = reflatten_data(out, size_i, size_j)
-
-    save_path = f"{experiment_dir}/result.h5"
-
-    with h5py.File(save_path, "w") as f :
-        f.create_dataset("inp", data=inp)
-        f.create_dataset("tar", data=tar)
-        f.create_dataset("out", data=out)
-        f.create_dataset("dif", data=dif)
-        f.create_dataset("rel_dif", data=rel_dif)
-        f.create_dataset("train_losses", data=train_losses)
-        f.create_dataset("test_losses", data=test_losses)
-        f.create_dataset("train_metrics", data=train_metrics)
-        f.create_dataset("test_metrics", data=test_metrics)
-
-
+save_path = f"{experiment_dir}/result.h5"
+with h5py.File(save_path, "w") as f:
+    f.create_dataset("test_inp", data=inp)
+    f.create_dataset("test_tar", data=tar)
+    f.create_dataset("test_out", data=out)
+    f.create_dataset("test_error", data=error)
+    f.create_dataset("test_rel_error", data=rel_error)
+    f.create_dataset("test_wave_inp", data=wave_inp)
+    f.create_dataset("test_wave_tar", data=wave_tar)
+    f.create_dataset("train_losses", data=train_losses)
+    f.create_dataset("test_losses", data=test_losses)
+    f.create_dataset("train_metrics", data=train_metrics)
+    f.create_dataset("test_metrics", data=test_metrics)
