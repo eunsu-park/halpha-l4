@@ -162,24 +162,26 @@ for idx in range(100) :
     plt.savefig(f"{plot_dir}/comparison_{idx}.png", dpi=200)
     plt.close()
 
-size_i = custom_data.size_i
-size_j = custom_data.size_j
+if options.data_mode == "index" :
 
-inp = reflatten_data(inp, size_i, size_j)
-tar = reflatten_data(tar, size_i, size_j)
-out = reflatten_data(out, size_i, size_j)
+    size_i = custom_data.size_i
+    size_j = custom_data.size_j
 
-save_path = f"{experiment_dir}/result.h5"
+    inp = reflatten_data(inp, size_i, size_j)
+    tar = reflatten_data(tar, size_i, size_j)
+    out = reflatten_data(out, size_i, size_j)
 
-with h5py.File(save_path, "w") as f :
-    f.create_dataset("inp", data=inp)
-    f.create_dataset("tar", data=tar)
-    f.create_dataset("out", data=out)
-    f.create_dataset("dif", data=dif)
-    f.create_dataset("rel_dif", data=rel_dif)
-    f.create_dataset("train_losses", data=train_losses)
-    f.create_dataset("test_losses", data=test_losses)
-    f.create_dataset("train_metrics", data=train_metrics)
-    f.create_dataset("test_metrics", data=test_metrics)
+    save_path = f"{experiment_dir}/result.h5"
+
+    with h5py.File(save_path, "w") as f :
+        f.create_dataset("inp", data=inp)
+        f.create_dataset("tar", data=tar)
+        f.create_dataset("out", data=out)
+        f.create_dataset("dif", data=dif)
+        f.create_dataset("rel_dif", data=rel_dif)
+        f.create_dataset("train_losses", data=train_losses)
+        f.create_dataset("test_losses", data=test_losses)
+        f.create_dataset("train_metrics", data=train_metrics)
+        f.create_dataset("test_metrics", data=test_metrics)
 
 
