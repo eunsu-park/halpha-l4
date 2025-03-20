@@ -177,7 +177,7 @@ if options.data_mode == "random" :
         plt.plot(wave_tar, test_rel_error[arr_i], color="blue")
         plt.title(f"Relative Error, (O - T) / T")
 
-        plt.savefig(f"{plot_dir}/{idx:03d}_profile.png", dpi=200)
+        plt.savefig(f"{plot_dir}/profile_{idx:03d}.png", dpi=200)
         plt.close()
 
 elif options.data_mode == "index" :
@@ -214,7 +214,7 @@ elif options.data_mode == "index" :
         plt.plot(wave_tar, test_rel_error[arr_i, arr_j], color="blue")
         plt.title(f"Relative Error, (O - T) / T")
 
-        plt.savefig(f"{plot_dir}/{idx:03d}_profile.png", dpi=200)
+        plt.savefig(f"{plot_dir}/profile_{idx:03d}.png", dpi=200)
         plt.close()
 
     for idx in range(20) :
@@ -238,7 +238,7 @@ elif options.data_mode == "index" :
         plt.imshow(test_rel_error[:, num], cmap="hot")
         plt.title("Relative Error, (O - T) / T")
 
-        plt.savefig(f"{plot_dir}/{idx:03d}_image.png", dpi=200)
+        plt.savefig(f"{plot_dir}/image_{idx:03d}.png", dpi=200)
         plt.close()
 
 
