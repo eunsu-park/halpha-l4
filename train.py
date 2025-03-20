@@ -97,7 +97,7 @@ x_test = np.arange(100, len(train_losses)+1, 100)
 
 plt.figure(figsize=(15, 10))
 plt.plot(x_train, train_losses, color="red", label="Train Loss (Log-Cosh)")
-plt.plot(x_test, test_losses, color="blue", label="Test Loss (Log-Cosh)")
+plt.plot(x_train, test_losses, color="blue", label="Test Loss (Log-Cosh)")
 plt.plot(x_test, train_metrics, color="green", label="Train Metric (MSE)")
 plt.plot(x_test, test_metrics, color="orange", label="Test Metric (MSE)")
 plt.title("Loss and Metric")
