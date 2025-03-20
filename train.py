@@ -108,21 +108,27 @@ out = network(test_inp)
 wave_inp = custom_data.wave_inp
 wave_tar = custom_data.wave_tar
 
-inp = inp.cpu().detach().numpy()
-tar = tar.cpu().detach().numpy()
-out = out.cpu().detach().numpy()
-inp = custom_data.denormalize(inp)
-tar = custom_data.denormalize(tar)
-out = custom_data.denormalize(out)
+train_inp = train_inp.cpu().detach().numpy()
+train_tar = train_tar.cpu().detach().numpy()
+train_inp = custom_data.denormalize(train_inp)
+train_tar = custom_data.denormalize(train_tar)
+
+test_inp = test_inp.cpu().detach().numpy()
+test_tar = test_tar.cpu().detach().numpy()
+test_out = test_out.cpu().detach().numpy()
+test_inp = custom_data.denormalize(test_inp)
+test_tar = custom_data.denormalize(test_tar)
+test_out = custom_data.denormalize(test_out)
 
 if options.data_mode == "index" :
-    inp = reflatten_data(inp, custom_data.size_i, custom_data.size_j)
-    tar = reflatten_data(tar, custom_data.size_i, custom_data.size_j)
-    out = reflatten_data(out, custom_data.size_i, custom_data.size_j)
-error = out - tar
-rel_error = error / tar
+    test_inp = reflatten_data(test_inp, custom_data.size_i, custom_data.size_j)
+    test_tar = reflatten_data(test_tar, custom_data.size_i, custom_data.size_j)
+    test_out = reflatten_data(test_out, custom_data.size_i, custom_data.size_j)
+test_error = test_out - test_tar
+test_rel_error = test_error / test_tar
 
-print(inp.shape, tar.shape, out.shape, error.shape, rel_error.shape)
+print(test_inp.shape, test_tar.shape, test_out.shape,
+      test_error.shape, test_rel_error.shape)
 
 plot_dir = f"{experiment_dir}/plot"
 if not os.path.exists(plot_dir):
@@ -144,47 +150,47 @@ for idx in range(100) :
 
     plt.subplot(2, 3, 1)
     if options.data_mode == "index" :
-        plt.plot(wave_inp, inp[arr_i, arr_j], color="red")
+        plt.plot(wave_inp, test_inp[arr_i, arr_j], color="red")
     elif options.data_mode == "random" :
-        plt.plot(wave_inp, inp[arr_i], color="red")
+        plt.plot(wave_inp, test_inp[arr_i], color="red")
     plt.title("Input, I")
 
     plt.subplot(2, 3, 2)
     if options.data_mode == "index" :
-        plt.plot(wave_tar, tar[arr_i, arr_j], color="blue")
+        plt.plot(wave_tar, test_tar[arr_i, arr_j], color="blue")
     elif options.data_mode == "random" :
-        plt.plot(wave_tar, tar[arr_i], color="blue")
+        plt.plot(wave_tar, test_tar[arr_i], color="blue")
     plt.title("Target, T")
 
     plt.subplot(2, 3, 3)
     if options.data_mode == "index" :
-        plt.plot(wave_tar, out[arr_i, arr_j], color="green")
+        plt.plot(wave_tar, test_out[arr_i, arr_j], color="green")
     elif options.data_mode == "random" :
-        plt.plot(wave_tar, out[arr_i], color="green")
+        plt.plot(wave_tar, test_out[arr_i], color="green")
     plt.title("Model Output, O")
 
     plt.subplot(2, 3, 4)
     if options.data_mode == "index" :
-        plt.plot(wave_tar, tar[arr_i, arr_j], color="blue", label="Target")
-        plt.plot(wave_tar, out[arr_i, arr_j], color="green", label="Model Output")
+        plt.plot(wave_tar, test_tar[arr_i, arr_j], color="blue", label="Target")
+        plt.plot(wave_tar, test_out[arr_i, arr_j], color="green", label="Model Output")
     elif options.data_mode == "random" :
-        plt.plot(wave_tar, tar[arr_i], color="blue", label="Target")
-        plt.plot(wave_tar, out[arr_i], color="green", label="Model Output")
+        plt.plot(wave_tar, test_tar[arr_i], color="blue", label="Target")
+        plt.plot(wave_tar, test_out[arr_i], color="green", label="Model Output")
     plt.title("T & O")
     plt.legend()
 
     plt.subplot(2, 3, 5)
     if options.data_mode == "index" :
-        plt.plot(wave_tar, error[arr_i, arr_j], color="red")
+        plt.plot(wave_tar, test_error[arr_i, arr_j], color="red")
     elif options.data_mode == "random" :
-        plt.plot(wave_tar, error[arr_i], color="red")
+        plt.plot(wave_tar, test_error[arr_i], color="red")
     plt.title(f"Error, O - T")
 
     plt.subplot(2, 3, 6)
     if options.data_mode == "index" :
-        plt.plot(wave_tar, rel_error[arr_i, arr_j], color="blue")
+        plt.plot(wave_tar, test_rel_error[arr_i, arr_j], color="blue")
     elif options.data_mode == "random" :
-        plt.plot(wave_tar, rel_error[arr_i], color="blue")
+        plt.plot(wave_tar, test_rel_error[arr_i], color="blue")
     plt.title(f"Relative Error, (O - T) / T")
 
     plt.savefig(f"{plot_dir}/comparison_{idx}.png", dpi=200)
@@ -193,13 +199,15 @@ for idx in range(100) :
 
 save_path = f"{experiment_dir}/result.h5"
 with h5py.File(save_path, "w") as f:
-    f.create_dataset("test_inp", data=inp)
-    f.create_dataset("test_tar", data=tar)
-    f.create_dataset("test_out", data=out)
-    f.create_dataset("test_error", data=error)
-    f.create_dataset("test_rel_error", data=rel_error)
-    f.create_dataset("test_wave_inp", data=wave_inp)
-    f.create_dataset("test_wave_tar", data=wave_tar)
+    f.create_dataset("train_inp", data=train_inp)
+    f.create_dataset("train_tar", data=train_tar)
+    f.create_dataset("test_inp", data=test_inp)
+    f.create_dataset("test_tar", data=test_tar)
+    f.create_dataset("test_out", data=test_out)
+    f.create_dataset("test_error", data=test_error)
+    f.create_dataset("test_rel_error", data=test_rel_error)
+    f.create_dataset("wave_inp", data=wave_inp)
+    f.create_dataset("wave_tar", data=wave_tar)
     f.create_dataset("train_losses", data=train_losses)
     f.create_dataset("test_losses", data=test_losses)
     f.create_dataset("train_metrics", data=train_metrics)
