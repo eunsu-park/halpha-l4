@@ -92,7 +92,7 @@ while epochs <= options.num_epochs :
 
 torch.save(network.state_dict(), f"{experiment_dir}/model.pth")
 
-x_train = np.arange(0, len(train_losses)+1)
+x_train = np.arange(1, len(train_losses)+1)
 x_test = np.arange(100, len(train_losses)+1, 100)
 
 plt.figure(figsize=(15, 10))
