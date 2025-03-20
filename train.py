@@ -231,7 +231,7 @@ elif options.data_mode == "index" :
         plt.title("Model Output, O")
 
         plt.subplot(2, 2, 3)
-        plt.imshow(test_error[:, num], cmap="hot", label="Target")
+        plt.imshow(test_error[:, num], cmap="hot")
         plt.title("Error, O - T")
 
         plt.subplot(2, 2, 4)
