@@ -1,9 +1,9 @@
-# python train.py \
-#     --data_dir /NAS/data/halpha/dataset \
-#     --output_dir /NAS/result/halpha \
-#     --data_mode random \
-#     --num_inp 19 \
-#     --experiment_name random_19 \
+python train.py \
+    --data_dir /NAS/data/halpha/dataset \
+    --output_dir /NAS/result/halpha \
+    --data_mode random \
+    --num_inp 19 \
+    --experiment_name random_19 \
 
 # python train.py \
 #     --data_dir /NAS/data/halpha/dataset \
