@@ -55,7 +55,7 @@ class CustomData:
                 test_tar = flatten_data(test_tar)
                 test_inp = self.normalize(test_inp)
                 test_tar = self.normalize(test_tar)
-                wave_inp = f["wave_{num_inp}"][:]
+                wave_inp = f[f"wave_{num_inp}"][:]
                 wave_tar = f["wave_original"][:]
                 self.wave_inp = wave_inp
                 self.wave_tar = wave_tar
@@ -77,7 +77,7 @@ class CustomData:
                     tar = flatten_data(tar)
                     inps.append(inp)
                     tars.append(tar)
-                    wave_inp = f["wave_{num_inp}"][:]
+                    wave_inp = f[f"wave_{num_inp}"][:]
                     wave_tar = f["wave_original"][:]
                     self.wave_inp = wave_inp
                     self.wave_tar = wave_tar
