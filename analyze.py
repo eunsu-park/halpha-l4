@@ -71,13 +71,13 @@ for file_path in data_list:
     with h5py.File(save_path, "w") as f:
         f.create_dataset("wave_original", data=wave_original)
         f.create_dataset("data_original", data=img_original)
-        f.create_dataset(f"wave_{num_20}", data=num_20)
+        f.create_dataset(f"wave_{num_20}", data=wave_20)
         f.create_dataset(f"data_{num_20}", data=img_20)
-        f.create_dataset(f"wave_{num_25}", data=num_25)
+        f.create_dataset(f"wave_{num_25}", data=wave_25)
         f.create_dataset(f"data_{num_25}", data=img_25)
-        f.create_dataset(f"wave_{num_35}", data=num_35)
+        f.create_dataset(f"wave_{num_35}", data=wave_35)
         f.create_dataset(f"data_{num_35}", data=img_35)
-        f.create_dataset(f"wave_{num_45}", data=num_45)
+        f.create_dataset(f"wave_{num_45}", data=wave_45)
         f.create_dataset(f"data_{num_45}", data=img_45)
 
 

@@ -49,19 +49,16 @@ class CustomData:
             with h5py.File(test_file_path, "r") as f:
                 test_inp = f[f"data_{num_inp}"][:]
                 test_tar = f[f"data_original"][:]
-                wave_inp = f["wave_{num_inp}"][:]
-                wave_tar = f["wave_original"][:]
-
                 self.size_i = test_tar.shape[0]
                 self.size_j = test_tar.shape[1]
-                self.wave_inp = wave_inp
-                self.wave_tar = wave_tar
-
                 test_inp = flatten_data(test_inp)
                 test_tar = flatten_data(test_tar)
-
                 test_inp = self.normalize(test_inp)
                 test_tar = self.normalize(test_tar)
+                wave_inp = f["wave_{num_inp}"][:]
+                wave_tar = f["wave_original"][:]
+                self.wave_inp = wave_inp
+                self.wave_tar = wave_tar
 
             self.train_inp = torch.tensor(train_inp, dtype=torch.float32)
             self.train_tar = torch.tensor(train_tar, dtype=torch.float32)
@@ -76,12 +73,14 @@ class CustomData:
                 with h5py.File(data_path, "r") as f:
                     inp = f[f"data_{num_inp}"][:]
                     tar = f[f"data_original"][:]
-
                     inp = flatten_data(inp)
                     tar = flatten_data(tar)
-
                     inps.append(inp)
                     tars.append(tar)
+                    wave_inp = f["wave_{num_inp}"][:]
+                    wave_tar = f["wave_original"][:]
+                    self.wave_inp = wave_inp
+                    self.wave_tar = wave_tar
 
             inps = np.concatenate(inps, axis=0)
             tars = np.concatenate(tars, axis=0)
