@@ -19,8 +19,7 @@ class Options:
                             choices=[19, 27, 33, 41],
                             default=19, help="number of input channels")
         parser.add_argument("--num_tar", type=int, default=502, help="number of target channels")
-        parser.add_argument("--nb_epochs", type=int, default=500, help="number of epochs")
-        parser.add_argument("--nb_epochs_decay", type=int, default=500, help="number of epochs")
+        parser.add_argument("--num_epochs", type=int, default=1000, help="number of epochs")
 
         self.parser = parser
 

@@ -5,6 +5,13 @@ import numpy as np
 import torch
 
 
+def flatten_data(data):
+    return data.reshape(-1, data.shape[-1])
+
+def reflatten_data(data, size_i, size_j):
+    return data.reshape(size_i, size_j, data.shape[-1])
+
+
 class CustomData:
     def __init__(self, options):
         data_dir = options.data_dir
@@ -25,6 +32,9 @@ class CustomData:
                     inp = f[f"data_{num_inp}"][:]
                     tar = f[f"data_original"][:]
 
+                    inp = flatten_data(inp)
+                    tar = flatten_data(tar)
+
                     train_inp.append(inp)
                     train_tar.append(tar)
 
@@ -39,6 +49,13 @@ class CustomData:
             with h5py.File(test_file_path, "r") as f:
                 test_inp = f[f"data_{num_inp}"][:]
                 test_tar = f[f"data_original"][:]
+
+                self.size_i = test_tar.shape[0]
+                self.size_j = test_tar.shape[1]
+
+                test_inp = flatten_data(test_inp)
+                test_tar = flatten_data(test_tar)
+
                 test_inp = self.normalize(test_inp)
                 test_tar = self.normalize(test_tar)
 
