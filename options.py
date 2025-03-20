@@ -5,8 +5,14 @@ class Options:
     def __init__(self):
         parser = argparse.ArgumentParser()
         parser.add_argument("--seed", type=int, default=250104, help="random seed")
-        parser.add_argument("--experiment", type=str, default="default", help="experiment name")        
+        parser.add_argument("--experiment_name", type=str, default="default", help="experiment name")        
         parser.add_argument("--data_dir", type=str, default="data", help="data directory")
+
+        parser.add_argument("--data_mode", type=str,
+                            choices=["index", "random"],
+                            default="index", help="data mode")
+        parser.add_argument("--test_index", type=int, help="test index")
+
         parser.add_argument("--output_dir", type=str, default="output", help="output directory")
         parser.add_argument("--device", type=str, default="cuda", help="device")
         parser.add_argument("--num_inp", type=int,

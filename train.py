@@ -33,7 +33,7 @@ train_tar = train_tar.to(device)
 test_inp = test_inp.to(device)
 test_tar = test_tar.to(device)
 
-data_path = f"{options.output_dir}/{options.experiment}/data_{options.num_inp}.h5"
+data_path = f"{options.output_dir}/{options.experiment_name}/data_{options.num_inp}.h5"
 os.makedirs(os.path.dirname(data_path), exist_ok=True)
 with h5py.File(data_path, "w") as f:
     f.create_dataset("train_inp", data=train_inp.cpu().detach().numpy())
